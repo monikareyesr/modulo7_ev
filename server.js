@@ -10,12 +10,17 @@ app.post('/usuario', async (req, res) => {
     const datos = await getForm(req);
     const nombre = datos.nombre;
     const balance = datos.balance;
+    try {
+        await crearUsuario(nombre.trim(), balance)
+    } catch (error) {
+        res.statusCode = 400
+        return res.json({ error: error })
+    }
     if (isNaN(balance) || !balance) {
         res.status = 400
         return res.redirect(res.status = 400)
     }
-    await crearUsuario(nombre.trim(), balance)
-    res.end()
+    res.json({})
 });
 
 app.get('/usuarios', async (req, res) => {
@@ -27,19 +32,27 @@ app.get('/usuarios', async (req, res) => {
 app.put('/usuario', async (req, res) => {
     const id = req.query.id;
     const datos = await getForm(req)
-    const nombre = datos.name;
-    const balance = datos.balance;
-    const resp = await editarUsuario(nombre, balance, id)
+    try {
+        const nombre = datos.name;
+        const balance = datos.balance;
+        const resp = await editarUsuario(nombre, balance, id)
+    } catch (error) {
+        console.log(error)
+    }
     res.json(resp)
     // res.end()
 });
 //recibe por id el usuario a eliminar
 app.delete('/usuario', async (req, res) => {
     const id = req.query.id;
-    await eliminarUsuario(id)
+    try {
+        await eliminarUsuario(id)
+    } catch (error) {
+        console.log(error)
+    }
     //res.end()
     res.json({})
-   
+
 });
 
 
@@ -50,8 +63,11 @@ app.post('/transferencia', async (req, res) => {
     const receptor = datos.receptor;
     const monto = datos.monto;
     var date = new Date();
-
-    await crearTransferencia(emisor, receptor, monto, formatDate(date))
+    try {
+        await crearTransferencia(emisor, receptor, monto, formatDate(date))
+    } catch (error) {
+        console.log(error)
+    }
     res.json({})
 })
 
